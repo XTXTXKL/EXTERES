@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXTERES - Procrastination's Worst Nightmare</title>
+    <link href="https://fonts.cdnfonts.com/css/fk-grotesk" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/neutraface" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FK Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 60px;
+            background: rgba(0, 0, 0, 0.95);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 100;
+            color: white;
+            letter-spacing: 3px;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 50px;
+            list-style: none;
+        }
+
+        .nav-center a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-center a:hover {
+            color: white;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-icon {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            background: none;
+            border: none;
+            padding: 5px 10px;
+        }
+
+        .nav-icon:hover {
+            color: white;
+        }
+
+        /* Mobile Menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            z-index: 998;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 400px;
+            max-width: 90vw;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.1);
+            backdrop-filter: blur(40px);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            transition: right 0.4s ease;
+            z-index: 999;
+            padding: 100px 40px 40px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+        }
+
+        .mobile-menu ul li {
+            margin-bottom: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px 0;
+        }
+
+        .mobile-menu ul li:first-child {
+            padding-top: 0;
+        }
+
+        .mobile-menu ul li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .mobile-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 400;
+            transition: opacity 0.3s ease;
+            display: block;
+        }
+
+        .mobile-menu ul li a:hover {
+            opacity: 0.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 140px 60px 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            font-weight: 100;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            letter-spacing: -2px;
+            max-width: 900px;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 50px;
+            max-width: 700px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .hero-button {
+            background: white;
+            color: #000000;
+            padding: 16px 40px;
+            border-radius: 0;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-block;
+        }
+
+        .hero-button:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Featured Section */
+        .featured {
+            padding: 100px 60px;
+            background: #000000;
+        }
+
+        .featured-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .featured-header h2 {
+            font-size: 48px;
+            font-weight: 100;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+        }
+
+        .featured-header p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .featured-item {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 60px 40px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .featured-item:hover::before {
+            left: 100%;
+        }
+
+        .featured-item:hover {
+            background: #0f0f0f;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .featured-image {
+            display: none;
+        }
+
+        .featured-item h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+
+        .featured-item p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .featured-link {
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+            display: inline-block;
+            position: relative;
+            padding-bottom: 3px;
+        }
+
+        .featured-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .featured-link:hover::after {
+            width: 100%;
+        }
+
+        /* Full Width Banner */
+        .banner {
+            padding: 120px 60px;
+            background: #0a0a0a;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .banner h2 {
+            font-size: 56px;
+            font-weight: 100;
+            margin-bottom: 30px;
+            letter-spacing: -1.5px;
+            line-height: 1.2;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+        }
+
+        .banner p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* Footer */
+        footer {
+            background: #000000;
+            padding: 80px 60px 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 60px;
+            max-width: 1400px;
+            margin: 0 auto 60px;
+        }
+
+        .footer-section h4 {
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-section ul li a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            font-weight: 300;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-weight: 300;
+        }
+
+        @media (max-width: 1024px) {
+            .featured-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 20px 30px;
+            }
+            .nav-center {
+                display: none;
+            }
+            .hero {
+                padding: 120px 30px 60px;
+            }
+            .hero h1 {
+                font-size: 40px;
+            }
+            .featured-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            .banner h2 {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <nav>
+        <div class="logo">EXTERES</div>
+        <ul class="nav-center">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+        </ul>
+        <div class="nav-right">
+            <button class="nav-icon" id="menuToggle">☰</button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="{{ url_for('auth') }}">Get Started</a></li>
+        </ul>
+    </div>
+
+    <section class="hero">
+        <h1>Procrastination's Worst Nightmare</h1>
+        <p>Step into a world where productivity meets precision. Experience intelligent task management, focus tools, and insights designed to transform how you work.</p>
+        <a href="{{ url_for('auth') }}" class="hero-button">Start Your Journey</a>
+    </section>
+
+    <section class="featured">
+        <div class="featured-header">
+            <h2>Our Core Features</h2>
+            <p>Discover the tools that will revolutionize your productivity</p>
+        </div>
+        <div class="featured-grid">
+            <div class="featured-item">
+                <h3>Smart Task Management</h3>
+                <p>AI-powered task prioritization that adapts to your workflow and deadlines, ensuring you always focus on what matters most.</p>
+                <a href="#tasks" class="featured-link">Discover More</a>
+            </div>
+            <div class="featured-item">
+                <h3>Deep Focus Sessions</h3>
+                <p>Enter a state of flow with our advanced focus mode. Block distractions and achieve peak concentration for your most important work.</p>
+                <a href="#focus" class="featured-link">Discover More</a>
+            </div>
+            <div class="featured-item">
+                <h3>Analytics Dashboard</h3>
+                <p>Track your productivity patterns with beautiful visualizations and gain actionable insights to optimize your daily routine.</p>
+                <a href="#analytics" class="featured-link">Discover More</a>
+            </div>
+            <div class="featured-item">
+                <h3>Seamless Integrations</h3>
+                <p>Connect with your favorite tools including Slack, Google Calendar, and Notion for a unified productivity ecosystem.</p>
+                <a href="#integrations" class="featured-link">Discover More</a>
+            </div>
+            <div class="featured-item">
+                <h3>Team Collaboration</h3>
+                <p>Coordinate effortlessly with your team while maintaining individual focus and accountability across all projects.</p>
+                <a href="#team" class="featured-link">Discover More</a>
+            </div>
+            <div class="featured-item">
+                <h3>Intelligent Reminders</h3>
+                <p>Receive perfectly timed notifications based on your schedule, energy levels, and work patterns throughout the day.</p>
+                <a href="#reminders" class="featured-link">Discover More</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="banner">
+        <h2>Celebrating The Art Of Productivity</h2>
+        <p>Join thousands of professionals who have transformed their workflow and achieved unprecedented levels of focus and efficiency with EXTERES.</p>
+        <a href="#learn" class="hero-button">Explore Our Story</a>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#integrations">Integrations</a></li>
+                    <li><a href="#updates">Updates</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#careers">Careers</a></li>
+                    <li><a href="#press">Press</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#guides">Guides</a></li>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#community">Community</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms of Service</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#cookies">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 EXTERES. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Menu toggle functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+        });
+
+        menuOverlay.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        });
+
+        // Close menu when clicking on a link
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+            });
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
