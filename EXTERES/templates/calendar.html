@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EXTERES — Week Calendar</title>
+
+<style>
+:root{
+  --bg:#000;
+  --panel:#0b0b0b;
+  --line:rgba(255,255,255,0.06);
+  --muted:rgba(255,255,255,0.6);
+  --white:#fff;
+  --today-overlay: rgba(255,255,255,0.08);
+  --event-bg: rgba(255,255,255,0.03);
+  --event-border: rgba(255,255,255,0.12);
+  --glow: 0 0 18px rgba(255,255,255,0.12);
+  --modal-bg: rgba(0,0,0,0.76);
+}
+
+/* Base */
+html,body{height:100%;margin:0;background:var(--bg);color:var(--white);font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;-webkit-font-smoothing:antialiased}
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;border-bottom:1px solid rgba(255,255,255,0.04);background:#000}
+.brand{font-weight:100;letter-spacing:3px;font-size:18px}
+.controls{display:flex;gap:12px;align-items:center}
+.btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .18s ease}
+.btn:hover{box-shadow:var(--glow);transform:translateY(-2px)}
+.week-label{font-size:18px;font-weight:300}
+
+/* layout */
+.container{max-width:1100px;margin:30px auto;padding:18px;}
+.week-grid{display:flex;flex-direction:column;gap:14px}
+.day-row{display:flex;gap:14px;align-items:flex-start}
+.day-label{width:120px;flex:0 0 120px;color:var(--muted);font-weight:600}
+.timeline-wrap{flex:1;position:relative;border-radius:10px;border:1px solid var(--line);background:var(--panel);overflow:hidden;padding:12px}
+.timeline{position:relative;height:96px;border-radius:8px;background:transparent;overflow:visible}
+.ruler{position:absolute;left:0;right:0;top:0;bottom:0}
+.hour-tick{position:absolute;top:6px;bottom:6px;border-left:1px solid rgba(255,255,255,0.02)}
+.event-pill{position:absolute;top:8px;height:48px;border-radius:10px;padding:8px 10px;box-sizing:border-box;background:var(--event-bg);border:1px solid var(--event-border);color:var(--white);font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
+.event-pill:hover{transform:translateY(-3px);box-shadow:var(--glow)}
+.event-meta{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* stacking offsets */
+.offset-0{top:8px}
+.offset-1{top:56px}
+.offset-2{top:104px}
+
+/* today subtle overlay */
+.day-today .timeline{box-shadow: inset 0 0 22px var(--today-overlay); border-radius:8px}
+
+/* modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--modal-bg);opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:3500}
+.modal.show{opacity:1;pointer-events:auto}
+.modal-card{width:680px;max-width:96%;background:#0e0e0e;border-radius:14px;padding:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 30px 80px rgba(0,0,0,0.6);transform:translateY(10px);transition:transform .28s cubic-bezier(.22,1,.36,1)}
+.modal.show .modal-card{transform:translateY(0)}
+.modal-grid{display:flex;gap:12px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.input,textarea{width:100%;padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:var(--white);box-sizing:border-box;font-size:14px}
+textarea{min-height:90px;resize:vertical}
+.equal-times{display:flex;gap:12px}
+.time-input{flex:1;cursor:pointer}
+
+/* file info small */
+.file-info{font-size:12px;color:var(--muted);margin-top:6px}
+
+/* clock popup (high z-index) */
+.clock-popup{position:fixed;z-index:5000;width:300px;padding:16px;border-radius:12px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.06);box-shadow:0 30px 80px rgba(0,0,0,0.7);display:none;opacity:0;transform:translateY(10px);transition:opacity .26s ease,transform .36s cubic-bezier(.22,1,.36,1)}
+.clock-popup.show{display:block;opacity:1;transform:translateY(0)}
+.clock-face{width:220px;height:220px;margin:6px auto;border-radius:50%;position:relative;border:1px solid rgba(255,255,255,0.04)}
+.clock-hand{position:absolute;left:50%;top:50%;width:2px;height:80px;background:var(--white);transform-origin:bottom center;transition:transform .16s ease}
+.clock-dot{position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:var(--white);transform:translate(-50%,-50%)}
+.clock-label{position:absolute;color:var(--white);font-size:13px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;transition:all .14s ease}
+.clock-label:hover{box-shadow:var(--glow)}
+.am-pm{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.am-btn{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:var(--white);cursor:pointer}
+.am-btn.active{background:var(--white);color:#000}
+
+/* responsive */
+@media (max-width:920px){ .day-label{width:96px} .event-pill{height:44px} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">EXTERES</div>
+  <div class="controls">
+    <button class="btn" id="prevWeek">◀</button>
+    <div class="week-label" id="weekLabel">—</div>
+    <button class="btn" id="nextWeek">▶</button>
+    <button class="btn" id="addEvent">Add Event</button>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="week-grid" id="weekGrid"></div>
+</main>
+
+<!-- Modal -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle" style="margin:0 0 12px;font-weight:300">Add Event</h3>
+
+    <div style="display:flex;gap:12px;margin-bottom:12px">
+      <div style="flex:1">
+        <label>Title</label>
+        <input id="evtTitle" class="input" type="text" placeholder="Lecture, Meeting, etc.">
+      </div>
+      <div style="width:170px">
+        <label>Date</label>
+        <input id="evtDate" class="input" type="text" readonly>
+      </div>
+    </div>
+
+    <div class="modal-grid" style="margin-bottom:12px">
+      <div style="flex:1">
+        <label>Start</label>
+        <div class="equal-times time-input" id="startTimeBox">
+          <input id="startTime" class="input time-input" type="text" readonly placeholder="HH:MM AM">
+        </div>
+      </div>
+      <div style="flex:1">
+        <label>End</label>
+        <div class="equal-times time-input" id="endTimeBox">
+          <input id="endTime" class="input time-input" type="text" readonly placeholder="HH:MM AM">
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <label>Attach notes (optional)</label>
+      <input id="fileInput" type="file" class="input" accept=".pdf,.doc,.docx,.txt">
+      <div class="file-info" id="fileInfo"></div>
+    </div>
+
+    <div style="margin-bottom:10px">
+      <label>Description</label>
+      <textarea id="evtDesc" class="input" placeholder="Agenda, links, location..."></textarea>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px">
+      <button class="btn" id="deleteBtn" style="display:none">Delete</button>
+      <button class="btn" id="cancelBtn">Cancel</button>
+      <button class="btn" id="saveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Clock popup (shared for start & end) -->
+<div class="clock-popup" id="clockPopup" role="dialog" aria-hidden="true">
+  <div style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:8px">Select time</div>
+  <div class="clock-face" id="clockFace">
+    <div class="clock-hand" id="clockHand"></div>
+    <div class="clock-dot"></div>
+  </div>
+  <div class="am-pm">
+    <button class="am-btn active" id="amBtn">AM</button>
+    <button class="am-btn" id="pmBtn">PM</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Utilities & State ---------- */
+const weekGrid = document.getElementById('weekGrid');
+const weekLabel = document.getElementById('weekLabel');
+const prevWeek = document.getElementById('prevWeek');
+const nextWeek = document.getElementById('nextWeek');
+const addEventBtn = document.getElementById('addEvent');
+
+const modal = document.getElementById('modal');
+const evtTitle = document.getElementById('evtTitle');
+const evtDate = document.getElementById('evtDate');
+const startTimeInput = document.getElementById('startTime');
+const endTimeInput = document.getElementById('endTime');
+const fileInput = document.getElementById('fileInput');
+const fileInfo = document.getElementById('fileInfo');
+const evtDesc = document.getElementById('evtDesc');
+const saveBtn = document.getElementById('saveBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const deleteBtn = document.getElementById('deleteBtn');
+
+const clockPopup = document.getElementById('clockPopup');
+const clockFace = document.getElementById('clockFace');
+const clockHand = document.getElementById('clockHand');
+const amBtn = document.getElementById('amBtn');
+const pmBtn = document.getElementById('pmBtn');
+
+let weekStart = startOfWeek(new Date());
+let eventsCache = [];
+let editingEvent = null;
+let selectedDateForNew = null;
+let activeTimeInput = null; // reference to startTimeInput or endTimeInput for clock
+
+/* helpers */
+function startOfWeek(d){
+  const n = new Date(d);
+  const day = (n.getDay() + 6) % 7; // Monday=0
+  n.setDate(n.getDate() - day);
+  n.setHours(0,0,0,0);
+  return n;
+}
+function isoYMD(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function formatWeekRange(s){
+  const d1 = new Date(s);
+  const d2 = new Date(s); d2.setDate(d2.getDate()+6);
+  const opt = { month:'short', day:'numeric' };
+  if(d1.getFullYear() === d2.getFullYear()){
+    return `${d1.toLocaleDateString(undefined,opt)} — ${d2.toLocaleDateString(undefined,opt)}, ${d1.getFullYear()}`;
+  } else {
+    return `${d1.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})} — ${d2.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}`;
+  }
+}
+function minutesOfDay(date){ return date.getHours()*60 + date.getMinutes(); }
+function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+
+/* ---------- Data fetch ---------- */
+async function fetchEvents(){
+  try{
+    const res = await fetch('/api/events');
+    if(!res.ok) throw new Error('fetch failed');
+    eventsCache = await res.json();
+  } catch(e){
+    console.error('Could not fetch events', e);
+    eventsCache = [];
+  }
+}
+
+/* ---------- Render week ---------- */
+function renderWeek(){
+  weekGrid.innerHTML = '';
+  weekLabel.textContent = formatWeekRange(weekStart);
+  const now = new Date();
+
+  for(let i=0;i<7;i++){
+    const day = new Date(weekStart);
+    day.setDate(day.getDate() + i);
+    day.setHours(0,0,0,0);
+
+    // row container
+    const row = document.createElement('div'); row.className = 'day-row';
+
+    // label
+    const label = document.createElement('div'); label.className = 'day-label';
+    label.innerHTML = `<div style="font-weight:700">${day.toLocaleDateString(undefined,{weekday:'short'})}</div><div style="font-size:12px;color:var(--muted)">${day.toLocaleDateString(undefined,{day:'numeric',month:'short'})}</div>`;
+    row.appendChild(label);
+
+    // timeline
+    const wrap = document.createElement('div'); wrap.className = 'timeline-wrap';
+    const timeline = document.createElement('div'); timeline.className = 'timeline';
+    const ruler = document.createElement('div'); ruler.className = 'ruler';
+    // hour ticks
+    for(let h=0; h<24; h++){
+      const tick = document.createElement('div'); tick.className = 'hour-tick';
+      tick.style.left = (h/24*100) + '%';
+      if(h%6===0) tick.style.borderLeft = '1px solid rgba(255,255,255,0.03)';
+      ruler.appendChild(tick);
+    }
+    timeline.appendChild(ruler);
+    wrap.appendChild(timeline);
+    row.appendChild(wrap);
+
+    // mark today
+    if(day.toDateString() === now.toDateString()){
+      row.classList.add('day-today');
+    }
+
+    // events for day
+    const dayStart = new Date(day);
+    const dayEnd = new Date(day); dayEnd.setHours(23,59,59,999);
+
+    // filter events that intersect this day
+    const eventsForDay = eventsCache.filter(ev=>{
+      if(!ev.start_time || !ev.end_time) return false;
+      const s = new Date(ev.start_time);
+      const e = new Date(ev.end_time);
+      return !(e < dayStart || s > dayEnd);
+    });
+
+    // compute start/end in minutes relative to this day, clamp to 0..1440
+    const placed = []; // to track offsets occupancy
+    eventsForDay.sort((a,b)=> new Date(a.start_time) - new Date(b.start_time) );
+
+    eventsForDay.forEach(ev=>{
+      const sDate = new Date(ev.start_time);
+      const eDate = new Date(ev.end_time);
+      // clamp to day bounds
+      const s = clamp( ( (sDate >= dayStart && sDate <= dayEnd) ? minutesOfDay(sDate) : 0 ), 0, 24*60 );
+      const e = clamp( ( (eDate >= dayStart && eDate <= dayEnd) ? minutesOfDay(eDate) : 24*60 ), 0, 24*60 );
+      // find offset level
+      let offset = 0;
+      while(true){
+        const conflict = placed.find(p => p.offset === offset && !(e <= p.s || s >= p.e));
+        if(!conflict) break;
+        offset++;
+      }
+      placed.push({ offset, s, e });
+      // create pill
+      const pill = document.createElement('div');
+      pill.className = 'event-pill offset-' + offset;
+      const left = (s / (24*60)) * 100;
+      const width = Math.max(((e - s) / (24*60)) * 100, 0.5);
+      pill.style.left = left + '%';
+      pill.style.width = Math.min(width, 100 - left) + '%';
+      pill.dataset.id = ev.id;
+      pill.innerHTML = `<div style="font-weight:600">${ev.title || '(no title)'}</div><div class="event-meta">${new Date(ev.start_time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} — ${new Date(ev.end_time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>`;
+      pill.addEventListener('click', (e) => { e.stopPropagation(); openEdit(ev); });
+      timeline.appendChild(pill);
+    });
+
+    // click on timeline to create with suggested time
+    timeline.addEventListener('click', (ev)=>{
+      const rect = timeline.getBoundingClientRect();
+      const x = clamp(ev.clientX - rect.left, 0, rect.width);
+      const pct = x / rect.width;
+      const minutes = Math.round(pct * 24 * 60);
+      const hh = Math.floor(minutes / 60);
+      const mm = minutes % 60;
+      selectedDateForNew = isoYMD(day);
+      openCreate(selectedDateForNew, hh, mm);
+    });
+
+    weekGrid.appendChild(row);
+  }
+}
+
+/* ---------- Modal: create / edit ---------- */
+
+function openCreate(dateYMD, hour=9, minute=0){
+  editingEvent = null;
+  document.getElementById('modalTitle').textContent = 'Add Event';
+  evtTitle.value = '';
+  evtDate.value = dateYMD;
+  startTimeInput.value = formatTimeFromHM(hour, minute);
+  const endHour = (hour + 1) % 24;
+  endTimeInput.value = formatTimeFromHM(endHour, minute);
+  evtDesc.value = '';
+  fileInput.value = '';
+  fileInfo.textContent = '';
+  deleteBtn.style.display = 'none';
+  document.getElementById('evtDate').value = dateYMD;
+  showModal();
+}
+
+function openEdit(ev){
+  editingEvent = ev;
+  document.getElementById('modalTitle').textContent = 'Edit Event';
+  evtTitle.value = ev.title || '';
+  evtDate.value = isoYMD(new Date(ev.start_time));
+  const s = new Date(ev.start_time);
+  const e = new Date(ev.end_time);
+  startTimeInput.value = formatTimeFromHM(s.getHours(), s.getMinutes());
+  endTimeInput.value = formatTimeFromHM(e.getHours(), e.getMinutes());
+  evtDesc.value = ev.description || '';
+  fileInput.value = '';
+  fileInfo.textContent = ev.file_url ? ev.file_url.split('/').pop() : '';
+  deleteBtn.style.display = 'inline-block';
+  showModal();
+}
+
+function showModal(){ modal.classList.add('show'); }
+function hideModal(){ modal.classList.remove('show'); editingEvent = null; selectedDateForNew = null; }
+
+/* format helpers */
+function formatTimeFromHM(h, m){
+  const period = h >= 12 ? 'PM' : 'AM';
+  let hh = h % 12; if(hh === 0) hh = 12;
+  return String(hh).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ' ' + period;
+}
+function parseTimeTo24(str){
+  if(!str) return null;
+  const parts = str.split(' ');
+  const [hh, mm] = parts[0].split(':').map(x => parseInt(x,10));
+  const period = parts[1];
+  let h = hh;
+  if(period === 'PM' && h < 12) h += 12;
+  if(period === 'AM' && h === 12) h = 0;
+  return { h, m: mm };
+}
+
+/* save & delete */
+saveBtn.addEventListener('click', async () => {
+  const title = evtTitle.value.trim();
+  if(!title) return alert('Please enter a title');
+  const dateYMD = evtDate.value || selectedDateForNew || isoYMD(weekStart);
+  const s = parseTimeTo24(startTimeInput.value);
+  const e = parseTimeTo24(endTimeInput.value);
+  if(!s || !e) return alert('Please choose start and end times');
+  const startISO = (new Date(`${dateYMD}T${String(s.h).padStart(2,'0')}:${String(s.m).padStart(2,'0')}:00`)).toISOString();
+  const endISO = (new Date(`${dateYMD}T${String(e.h).padStart(2,'0')}:${String(e.m).padStart(2,'0')}:00`)).toISOString();
+
+  // handle file upload if any
+  let file_url = null;
+  if(fileInput.files && fileInput.files[0]){
+    const fd = new FormData(); fd.append('file', fileInput.files[0]);
+    try{
+      const r = await fetch('/api/upload', { method: 'POST', body: fd });
+      if(r.ok){ const j = await r.json(); file_url = j.url; }
+    }catch(err){ console.warn('Upload failed', err); }
+  }
+
+  const payload = { title, description: evtDesc.value, start_time: startISO, end_time: endISO };
+  if(file_url) payload.file_url = file_url;
+
+  try{
+    if(editingEvent && editingEvent.id){
+      const res = await fetch(`/api/events/${editingEvent.id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error('Update failed');
+    } else {
+      const res = await fetch('/api/events', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error('Create failed');
+    }
+    await refreshAndRender();
+    hideModal();
+  }catch(e){
+    console.error(e);
+    alert('Save failed');
+  }
+});
+
+deleteBtn.addEventListener('click', async () => {
+  if(!editingEvent || !editingEvent.id) return;
+  if(!confirm('Delete this event?')) return;
+  try{
+    const res = await fetch(`/api/events/${editingEvent.id}`, { method: 'DELETE' });
+    if(!res.ok) throw new Error('Delete failed');
+    await refreshAndRender();
+    hideModal();
+  }catch(e){
+    console.error(e);
+    alert('Delete failed');
+  }
+});
+
+cancelBtn.addEventListener('click', () => { hideModal(); });
+
+/* ---------- Navigation ---------- */
+prevWeek.addEventListener('click', () => { weekStart.setDate(weekStart.getDate() - 7); refreshAndRender(); });
+nextWeek.addEventListener('click', () => { weekStart.setDate(weekStart.getDate() + 7); refreshAndRender(); });
+addEventBtn.addEventListener('click', () => { selectedDateForNew = isoYMD(weekStart); openCreate(selectedDateForNew, 9, 0); });
+
+/* ---------- Clock popup (two-step hour->minute) ---------- */
+
+let clockMode = 'hour'; // hour then minute
+let pickedHour = 12;
+let pickedMinute = 0;
+
+function openClockForInput(inputEl){
+  activeTimeInput = inputEl;
+  clockMode = 'hour';
+  buildClock('hour');
+  // place popup centered under inputEl
+  const rect = inputEl.getBoundingClientRect();
+  clockPopup.style.left = Math.max(8, rect.left + rect.width/2 - 150) + 'px';
+  clockPopup.style.top = (rect.bottom + 10) + 'px';
+  // AM/PM initial state — if the input has a value, honor it
+  const val = inputEl.value;
+  if(val){
+    const parts = val.split(' ');
+    if(parts[1] === 'PM'){ pmBtn.classList.add('active'); amBtn.classList.remove('active'); }
+    else { amBtn.classList.add('active'); pmBtn.classList.remove('active'); }
+  } else {
+    amBtn.classList.add('active'); pmBtn.classList.remove('active');
+  }
+  clockPopup.classList.add('show');
+}
+
+// Hide clock when click outside
+document.addEventListener('click', (e) => {
+  if(!clockPopup.contains(e.target) && !e.target.classList.contains('time-input')) {
+    clockPopup.classList.remove('show');
+  }
+});
+
+// Stop propagation on popup so modal won't close it
+clockPopup.addEventListener('click', (e) => { e.stopPropagation(); });
+
+// Build labels inside clock face for hour or minute
+function buildClock(type){
+  // clear previous labels
+  Array.from(clockFace.querySelectorAll('.clock-label')).forEach(n => n.remove());
+  const center = 110; // half of 220
+  if(type === 'hour'){
+    for(let i=1;i<=12;i++){
+      const angle = (i/12) * 360;
+      const rad = (angle - 90) * Math.PI / 180;
+      const r = 78;
+      const x = center + Math.cos(rad) * r;
+      const y = center + Math.sin(rad) * r;
+      const lbl = document.createElement('div');
+      lbl.className = 'clock-label';
+      lbl.style.left = (x - 14) + 'px';
+      lbl.style.top = (y - 14) + 'px';
+      lbl.textContent = i;
+      lbl.dataset.value = i;
+      lbl.addEventListener('click', (ev) => {
+        pickedHour = parseInt(ev.currentTarget.dataset.value, 10);
+        const angleDeg = ((pickedHour % 12) / 12) * 360;
+        setHand(angleDeg);
+        // auto switch to minute
+        clockMode = 'minute';
+        setTimeout(()=> buildClock('minute'), 160);
+      });
+      clockFace.appendChild(lbl);
+    }
+  } else {
+    // minute labels every 5
+    for(let m=0;m<60;m+=5){
+      const angle = (m/60) * 360;
+      const rad = (angle - 90) * Math.PI / 180;
+      const r = 78;
+      const x = center + Math.cos(rad) * r;
+      const y = center + Math.sin(rad) * r;
+      const lbl = document.createElement('div');
+      lbl.className = 'clock-label';
+      lbl.style.left = (x - 14) + 'px';
+      lbl.style.top = (y - 14) + 'px';
+      lbl.style.fontSize = '12px';
+      lbl.textContent = String(m).padStart(2,'0');
+      lbl.dataset.value = m;
+      lbl.addEventListener('click', (ev) => {
+        pickedMinute = parseInt(ev.currentTarget.dataset.value, 10);
+        const angleDeg = ((pickedMinute % 60) / 60) * 360;
+        setHand(angleDeg);
+        // finalize selection: set input value and close
+        const period = amBtn.classList.contains('active') ? 'AM' : 'PM';
+        const hDisplay = String(pickedHour).padStart(2,'0');
+        const mDisplay = String(pickedMinute).padStart(2,'0');
+        if(activeTimeInput){
+          activeTimeInput.value = `${hDisplay}:${mDisplay} ${period}`;
+        }
+        setTimeout(()=> clockPopup.classList.remove('show'), 120);
+      });
+      clockFace.appendChild(lbl);
+    }
+  }
+  setHand(0);
+}
+
+function setHand(angle){
+  clockHand.style.transform = `translate(-50%,-100%) rotate(${angle}deg)`;
+}
+
+// AM/PM toggle
+amBtn.addEventListener('click', () => { amBtn.classList.add('active'); pmBtn.classList.remove('active'); });
+pmBtn.addEventListener('click', () => { pmBtn.classList.add('active'); amBtn.classList.remove('active'); });
+
+// wire inputs to open clock
+[startTimeInput, endTimeInput].forEach(inp => {
+  inp.addEventListener('click', (e) => {
+    e.stopPropagation(); openClockForInput(inp);
+  });
+  // prevent modal clicks from closing clock immediately: stop propagation on parent container
+  inp.parentElement.addEventListener('click', (ev) => ev.stopPropagation());
+});
+
+/* ---------- helpers for initial populated time when editing existing event ---------- */
+function setTimeInputFromISO(inputEl, isoStr){
+  if(!isoStr) return;
+  const d = new Date(isoStr);
+  let h = d.getHours(); const m = d.getMinutes();
+  const period = h >= 12 ? 'PM' : 'AM';
+  let hh = h % 12; if(hh === 0) hh = 12;
+  inputEl.value = String(hh).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ' ' + period;
+}
+
+/* ---------- Refresh & init ---------- */
+async function refreshAndRender(){
+  await fetchEvents();
+  renderWeek();
+}
+
+/* init */
+refreshAndRender();
+
+/* ---------- place to respond to window resizing to reposition clock if open ---------- */
+window.addEventListener('resize', () => {
+  if(clockPopup.classList.contains('show') && activeTimeInput){
+    const rect = activeTimeInput.getBoundingClientRect();
+    clockPopup.style.left = Math.max(8, rect.left + rect.width/2 - 150) + 'px';
+    clockPopup.style.top = (rect.bottom + 10) + 'px';
+  }
+});
+
+/* ---------- small utility - click on timeline area to open create when user clicks empty area (already wired per timeline event creation) ---------- */
+
+</script>
+</body>
+</html>

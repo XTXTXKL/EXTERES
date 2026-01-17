@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXTERES - Features</title>
+    <link href="https://fonts.cdnfonts.com/css/fk-grotesk" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/neutraface" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FK Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 60px;
+            background: rgba(0, 0, 0, 0.95);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 100;
+            color: white;
+            letter-spacing: 3px;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            opacity: 0.8;
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 50px;
+            list-style: none;
+        }
+
+        .nav-center a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            line-height: 1.5;
+            padding: 5px 0;
+        }
+
+        .nav-center a:hover,
+        .nav-center a.active {
+            color: white;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-icon {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            background: none;
+            border: none;
+            padding: 5px 10px;
+        }
+
+        .nav-icon:hover {
+            color: white;
+        }
+
+        /* Mobile Menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            z-index: 998;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 400px;
+            max-width: 90vw;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.1);
+            backdrop-filter: blur(40px);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            transition: right 0.4s ease;
+            z-index: 999;
+            padding: 100px 40px 40px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+        }
+
+        .mobile-menu ul li {
+            margin-bottom: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px 0;
+        }
+
+        .mobile-menu ul li:first-child {
+            padding-top: 0;
+        }
+
+        .mobile-menu ul li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .mobile-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 400;
+            transition: opacity 0.3s ease;
+            display: block;
+        }
+
+        .mobile-menu ul li a:hover {
+            opacity: 0.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 60px 80px;
+            text-align: center;
+            background: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            font-weight: 100;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            letter-spacing: -2px;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* Features Grid */
+        .features-section {
+            padding: 100px 60px;
+            background: #000000;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header h2 {
+            font-size: 48px;
+            font-weight: 100;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+        }
+
+        .section-header p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 80px 50px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            background: #0f0f0f;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-number {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .feature-card h3 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+
+        .feature-card p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .feature-list li {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+            font-weight: 300;
+        }
+
+        .feature-list li::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 60px;
+            background: #0a0a0a;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .cta-section h2 {
+            font-size: 56px;
+            font-weight: 100;
+            margin-bottom: 30px;
+            letter-spacing: -1.5px;
+            line-height: 1.2;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .cta-button {
+            background: white;
+            color: #000000;
+            padding: 18px 45px;
+            border-radius: 0;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: #000000;
+            padding: 80px 60px 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 60px;
+            max-width: 1400px;
+            margin: 0 auto 60px;
+        }
+
+        .footer-section h4 {
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-section ul li a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            font-weight: 300;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-weight: 300;
+        }
+
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 20px 30px;
+            }
+            .nav-center {
+                display: none;
+            }
+            .hero {
+                padding: 120px 30px 60px;
+            }
+            .hero h1 {
+                font-size: 40px;
+            }
+            .features-section {
+                padding: 60px 30px;
+            }
+            .feature-card {
+                padding: 60px 30px;
+            }
+            .cta-section {
+                padding: 80px 30px;
+            }
+            .cta-section h2 {
+                font-size: 36px;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <nav>
+        <a href="{{ url_for('home') }}" class="logo">EXTERES</a>
+        <ul class="nav-center">
+            <li><a href="#features" class="active">Features</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            <li><a href="{{ url_for('pricing') }}">Pricing</a></li>
+        </ul>
+        <div class="nav-right">
+            <button class="nav-icon" id="menuToggle">☰</button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            <li><a href="{{ url_for('pricing') }}">Pricing</a></li>
+            <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            <li><a href="{{ url_for('auth') }}">Get Started</a></li>
+        </ul>
+    </div>
+
+    <section class="hero">
+        <h1>Powerful Features<br>For Peak Productivity</h1>
+        <p>Discover the comprehensive suite of tools designed to transform how you work, focus, and achieve your goals.</p>
+    </section>
+
+    <section class="features-section">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-number">01</div>
+                <h3>Smart Task Management</h3>
+                <p>Organize your workflow with intelligent prioritization powered by advanced algorithms that learn from your habits and deadlines.</p>
+                <ul class="feature-list">
+                    <li>AI-powered task prioritization</li>
+                    <li>Drag-and-drop interface</li>
+                    <li>Custom project workflows</li>
+                    <li>Recurring task automation</li>
+                    <li>Task dependencies tracking</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-number">02</div>
+                <h3>Deep Focus Sessions</h3>
+                <p>Enter a state of flow with our distraction-free focus mode, designed to help you achieve peak concentration during your most important work.</p>
+                <ul class="feature-list">
+                    <li>Customizable focus timers</li>
+                    <li>Website and app blocking</li>
+                    <li>Ambient sound environment</li>
+                    <li>Break reminders</li>
+                    <li>Focus session analytics</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-number">03</div>
+                <h3>Advanced Analytics</h3>
+                <p>Gain deep insights into your productivity patterns with beautiful visualizations and actionable data to optimize your workflow.</p>
+                <ul class="feature-list">
+                    <li>Daily productivity tracking</li>
+                    <li>Time allocation analysis</li>
+                    <li>Performance trends</li>
+                    <li>Custom reports generation</li>
+                    <li>Goal progress visualization</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-number">04</div>
+                <h3>Seamless Integrations</h3>
+                <p>Connect with all your favorite tools and platforms to create a unified productivity ecosystem tailored to your workflow.</p>
+                <ul class="feature-list">
+                    <li>Calendar synchronization</li>
+                    <li>Slack and Teams integration</li>
+                    <li>Google Workspace compatibility</li>
+                    <li>API access for custom tools</li>
+                    <li>Two-way data sync</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-number">05</div>
+                <h3>Team Collaboration</h3>
+                <p>Coordinate effortlessly with your team while maintaining individual focus and accountability across all your projects.</p>
+                <ul class="feature-list">
+                    <li>Shared workspaces</li>
+                    <li>Real-time collaboration</li>
+                    <li>Team progress tracking</li>
+                    <li>Role-based permissions</li>
+                    <li>Activity feed updates</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-number">06</div>
+                <h3>Intelligent Reminders</h3>
+                <p>Receive perfectly timed notifications that adapt to your schedule, energy levels, and work patterns throughout the day.</p>
+                <ul class="feature-list">
+                    <li>Smart notification timing</li>
+                    <li>Context-aware alerts</li>
+                    <li>Multi-channel delivery</li>
+                    <li>Snooze intelligence</li>
+                    <li>Custom reminder rules</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-number">07</div>
+                <h3>Cross-Platform Sync</h3>
+                <p>Access your tasks and data seamlessly across all your devices with real-time synchronization and offline support.</p>
+                <ul class="feature-list">
+                    <li>Desktop, mobile, and web apps</li>
+                    <li>Real-time cloud sync</li>
+                    <li>Offline mode support</li>
+                    <li>Automatic conflict resolution</li>
+                    <li>Encrypted data transfer</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-number">08</div>
+                <h3>Customization & Themes</h3>
+                <p>Personalize your workspace with custom themes, layouts, and configurations that match your unique working style.</p>
+                <ul class="feature-list">
+                    <li>Dark and light themes</li>
+                    <li>Custom color schemes</li>
+                    <li>Layout customization</li>
+                    <li>Widget configuration</li>
+                    <li>Keyboard shortcuts</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <h2>Ready To Transform Your Productivity?</h2>
+        <p>Join thousands of professionals who have revolutionized their workflow with EXTERES. Start your journey today.</p>
+        <a href="{{ url_for('auth') }}" class="cta-button">Get Started Free</a>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="{{ url_for('features') }}">Features</a></li>
+                    <li><a href="{{ url_for('pricing') }}">Pricing</a></li>
+                    <li><a href="{{ url_for('integrations') }}">Integrations</a></li>
+                    <li><a href="{{ url_for('updates') }}">Updates</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="{{ url_for('about') }}">About Us</a></li>
+                    <li><a href="#careers">Careers</a></li>
+                    <li><a href="#press">Press</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#guides">Guides</a></li>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#community">Community</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms of Service</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#cookies">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 EXTERES. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Menu toggle functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+        });
+
+        menuOverlay.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        });
+
+        // Close menu when clicking on a link
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+            });
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

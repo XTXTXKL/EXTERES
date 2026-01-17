@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXTERES - Profile</title>
+    <link href="https://fonts.cdnfonts.com/css/fk-grotesk" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/neutraface" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'FK Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #000000; color: #ffffff; overflow-x: hidden; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 60px; background: rgba(0, 0, 0, 0.95); position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .logo { font-size: 24px; font-weight: 100; color: white; letter-spacing: 3px; font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif; text-decoration: none; cursor: pointer; transition: opacity 0.3s ease; }
+        .logo:hover { opacity: 0.7; }
+        .nav-right { display: flex; gap: 30px; align-items: center; }
+        .back-btn { color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s ease; }
+        .back-btn:hover { color: white; }
+        .profile-container { margin-top: 100px; min-height: 100vh; padding: 40px 60px; }
+        .profile-wrapper { max-width: 900px; margin: 0 auto; }
+        .profile-header { display: flex; gap: 40px; align-items: flex-start; margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: #f5f5f0; display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: 500; text-transform: uppercase; color: #2d3748; flex-shrink: 0; }
+        .profile-info { flex: 1; }
+        .profile-name { font-size: 48px; font-weight: 100; letter-spacing: -1px; font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif; margin-bottom: 15px; }
+        .profile-email { font-size: 16px; color: rgba(255, 255, 255, 0.7); margin-bottom: 20px; font-weight: 300; }
+        .profile-stats { display: flex; gap: 40px; margin-top: 25px; }
+        .stat { display: flex; flex-direction: column; }
+        .stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255, 255, 255, 0.6); margin-bottom: 5px; }
+        .stat-value { font-size: 24px; font-weight: 500; color: white; }
+        .tabs { display: flex; gap: 0; margin-bottom: 40px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .tab { padding: 15px 30px; background: none; border: none; color: rgba(255, 255, 255, 0.6); font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: all 0.3s ease; font-family: 'FK Grotesk', sans-serif; font-weight: 500; position: relative; }
+        .tab:hover { color: white; }
+        .tab.active { color: white; }
+        .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .settings-group { margin-bottom: 40px; }
+        .settings-title { font-size: 18px; font-weight: 500; margin-bottom: 25px; letter-spacing: -0.5px; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; margin-bottom: 15px; transition: all 0.3s ease; }
+        .setting-item:hover { background: rgba(30, 30, 30, 0.6); border-color: rgba(255, 255, 255, 0.2); }
+        .setting-label { display: flex; flex-direction: column; gap: 5px; }
+        .setting-name { font-size: 14px; font-weight: 500; }
+        .setting-desc { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+        .toggle { width: 50px; height: 28px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 14px; position: relative; cursor: pointer; transition: all 0.3s ease; }
+        .toggle.active { background: #4ade80; border-color: #4ade80; }
+        .toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: left 0.3s ease; }
+        .toggle.active::after { left: 24px; }
+        .activity-feed { display: flex; flex-direction: column; gap: 20px; }
+        .activity-item { display: flex; gap: 15px; padding: 20px; background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; transition: all 0.3s ease; }
+        .activity-item:hover { background: rgba(30, 30, 30, 0.6); border-color: rgba(255, 255, 255, 0.2); }
+        .activity-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
+        .activity-content { flex: 1; }
+        .activity-title { font-size: 14px; font-weight: 500; margin-bottom: 5px; }
+        .activity-time { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255, 255, 255, 0.8); }
+        .form-group input { width: 100%; padding: 12px 16px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white; font-size: 14px; font-family: 'FK Grotesk', sans-serif; transition: all 0.3s ease; }
+        .form-group input:focus { outline: none; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
+        .form-group input::placeholder { color: rgba(255, 255, 255, 0.3); }
+        .form-group input:disabled { background: rgba(255, 255, 255, 0.02); color: rgba(255, 255, 255, 0.4); cursor: not-allowed; }
+        .save-btn { padding: 14px 40px; background: white; color: #000000; border: none; border-radius: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: 'FK Grotesk', sans-serif; }
+        .save-btn:hover { background: rgba(255, 255, 255, 0.9); transform: translateY(-2px); }
+        .flash-message { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-20px); background: rgba(74, 222, 128, 0.15); border: 1px solid rgba(74, 222, 128, 0.3); color: #4ade80; padding: 16px 30px; border-radius: 8px; font-size: 14px; font-weight: 400; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.4s ease; backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); }
+        .flash-message.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        .flash-message.error { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
+        @media (max-width: 768px) { nav { padding: 20px 30px; } .profile-container { padding: 30px 20px; } .profile-header { flex-direction: column; align-items: center; text-align: center; gap: 30px; } .profile-name { font-size: 36px; } .profile-avatar { width: 120px; height: 120px; font-size: 50px; } .profile-stats { justify-content: center; } .tabs { flex-wrap: wrap; } .tab { padding: 12px 20px; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('dashboard') }}" class="logo">EXTERES</a>
+        <div class="nav-right">
+            <a href="{{ url_for('dashboard') }}" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div id="flashMessage" class="flash-message"></div>
+
+    <div class="profile-container">
+        <div class="profile-wrapper">
+            <div class="profile-header">
+                <div id="profileAvatar" class="profile-avatar">{{ user_name[0].upper() }}</div>
+                <div class="profile-info">
+                    <h1 id="profileName" class="profile-name">{{ user_name }}</h1>
+                    <p id="profileEmail" class="profile-email">{{ user_email }}</p>
+                    <div class="profile-stats">
+                        <div class="stat"><div class="stat-label">Tasks Completed</div><div class="stat-value">0</div></div>
+                        <div class="stat"><div class="stat-label">Focus Hours</div><div class="stat-value">0</div></div>
+                        <div class="stat"><div class="stat-label">Streak</div><div class="stat-value">0 days</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('profile')">Profile</button>
+                <button class="tab" onclick="switchTab('settings')">Settings</button>
+                <button class="tab" onclick="switchTab('activity')">Activity</button>
+            </div>
+
+            <div id="profile" class="tab-content active">
+                <div class="settings-group">
+                    <h3 class="settings-title">Personal Information</h3>
+                    <div class="form-group"><label>Full Name</label><input type="text" id="fullName" value="{{ user_name }}" placeholder="Enter your full name"></div>
+                    <div class="form-group"><label>Email Address</label><input type="email" id="email" value="{{ user_email }}" disabled></div>
+                    <div class="form-group"><label>Bio</label><input type="text" id="bio" placeholder="Tell us about yourself"></div>
+                    <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+                </div>
+            </div>
+
+            <div id="settings" class="tab-content">
+                </div>
+
+            <div id="activity" class="tab-content">
+                <div class="activity-feed">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadProfileData() {
+            try {
+                // Fetch profile info (bio, name) from our new endpoint
+                const profileResponse = await fetch('/api/profile');
+                if (!profileResponse.ok) throw new Error('Failed to fetch profile.');
+                const profileData = await profileResponse.json();
+
+                // Update the form fields with data from the database. Use initial page data as fallback.
+                if (profileData.full_name) document.getElementById('fullName').value = profileData.full_name;
+                if (profileData.bio) document.getElementById('bio').value = profileData.bio;
+
+                // Fetch tasks to calculate stats
+                const tasksResponse = await fetch('/api/tasks');
+                if (!tasksResponse.ok) throw new Error('Failed to fetch tasks.');
+                const tasks = await tasksResponse.json();
+
+                // Fetch focus sessions
+                const focusResponse = await fetch('/api/focus');
+                const focusSessions = focusResponse.ok ? await focusResponse.json() : [];
+
+                // Calculate and display stats
+                const tasksCompleted = tasks.filter(t => t.is_complete).length;
+                const focusHours = focusSessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0) / 60;
+                
+                // Simplified streak calculation
+                let streak = 0;
+                const activityDates = new Set();
+                tasks.forEach(t => t.completed_at && activityDates.add(t.completed_at.split('T')[0]));
+                focusSessions.forEach(s => s.created_at && activityDates.add(s.created_at.split('T')[0]));
+                let checkDate = new Date();
+                while (activityDates.has(checkDate.toISOString().split('T')[0])) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                }
+
+                document.querySelector('.profile-stats .stat:nth-child(1) .stat-value').textContent = tasksCompleted;
+                document.querySelector('.profile-stats .stat:nth-child(2) .stat-value').textContent = focusHours.toFixed(1);
+                document.querySelector('.profile-stats .stat:nth-child(3) .stat-value').textContent = `${streak} day${streak !== 1 ? 's' : ''}`;
+
+                // Build and display activity feed
+                const activityFeed = [];
+                tasks.filter(t => t.is_complete).forEach(t => activityFeed.push({ title: `Completed "${t.title}" task`, timestamp: new Date(t.completed_at), type: 'task' }));
+                focusSessions.forEach(s => activityFeed.push({ title: `Logged a ${s.duration_minutes} min focus session`, timestamp: new Date(s.created_at), type: 'focus' }));
+
+                activityFeed.sort((a, b) => b.timestamp - a.timestamp);
+                const recentActivities = activityFeed.slice(0, 10);
+                const activityContainer = document.querySelector('.activity-feed');
+                activityContainer.innerHTML = '';
+
+                if (recentActivities.length > 0) {
+                    recentActivities.forEach(activity => {
+                        const icon = activity.type === 'task' ? '' : '';
+                        activityContainer.innerHTML += `
+                            <div class="activity-item">
+                                <div class="activity-icon">${icon}</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">${activity.title}</div>
+                                    <div class="activity-time">${getTimeAgo(activity.timestamp)}</div>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    activityContainer.innerHTML = '<p style="color: rgba(255,255,255,0.5); text-align: center; padding: 40px 0;">No recent activity yet.</p>';
+                }
+
+            } catch (error) {
+                console.error('Error loading profile data:', error);
+                if (error.message.includes('401') || error.message.includes('Failed to fetch')) {
+                     window.location.href = '/auth'; // Redirect if not logged in
+                } else {
+                     showFlash('Error loading profile data.', false);
+                }
+            }
+        }
+
+        async function saveProfile() {
+            const fullName = document.getElementById('fullName').value;
+            const bio = document.getElementById('bio').value;
+
+            if (!fullName.trim()) {
+                showFlash('Full name cannot be empty.', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ full_name: fullName, bio: bio })
+                });
+
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Failed to update profile.');
+
+                // Update the page header with the new name
+                document.getElementById('profileName').textContent = fullName;
+                document.getElementById('profileAvatar').textContent = fullName[0].toUpperCase();
+
+                showFlash('✓ Profile updated successfully!');
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                showFlash(error.message, false);
+            }
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'Just now';
+            const intervals = { year: 31536000, month: 2592000, day: 86400, hour: 3600, minute: 60 };
+            for (let unit in intervals) {
+                const interval = Math.floor(seconds / intervals[unit]);
+                if (interval >= 1) return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
+            }
+        }
+
+        function showFlash(message, isSuccess = true) {
+            const flash = document.getElementById('flashMessage');
+            flash.textContent = message;
+            flash.className = isSuccess ? 'flash-message' : 'flash-message error';
+            flash.classList.add('show');
+            setTimeout(() => flash.classList.remove('show'), 4000);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content, .tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function toggleSetting(toggle) {
+            toggle.classList.toggle('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfileData);
+    </script>
+</body>
+</html>

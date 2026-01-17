@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Session - EXTERES</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        nav.hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 100;
+            letter-spacing: 3px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.8);
+            border: none;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            color: white;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 61px;
+            width: 280px;
+            height: calc(100vh - 61px);
+            background: rgba(10, 10, 10, 0.8);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar h3 {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .add-task-btn {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .add-task-btn:hover {
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .task-item:hover {
+            color: white;
+            padding-left: 8px;
+        }
+
+        .task-item.active {
+            color: white;
+            font-weight: 500;
+            padding-left: 8px;
+            border-left: 2px solid white;
+        }
+
+        .task-item.completed {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal h2 {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .form-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .form-group input[type="number"]::-webkit-outer-spin-button,
+        .form-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Main Focus Area */
+        .focus-container {
+            margin-left: 280px;
+            margin-top: 0px;
+            height: calc(100vh - 61px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            transition: all 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .focus-container.zen-mode {
+            margin-left: 0;
+            margin-top: 0;
+            height: 100vh;
+        }
+
+        .focus-container.zen-mode .focus-content {
+            transform: translateY(+5%);
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            opacity: 1;
+        }
+
+        .focus-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .current-task {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .task-title {
+            font-size: 42px;
+            font-weight: 300;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            line-height: 1.3;
+        }
+
+        /* Timer */
+        .timer {
+            font-size: 120px;
+            font-weight: 100;
+            letter-spacing: 10px;
+            margin-bottom: 40px;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .focus-container {
+         justify-content: flex-start; /* instead of center */
+         padding-top: 10vh; /* push content slightly down */
+    }
+
+        .focus-container.zen-mode .focus-content {
+         transform: translateY(0);
+         margin-bottom: 6vh; /* make space for stats at bottom */
+    }
+
+/* Make timer slightly more balanced visually */
+        .focus-container.zen-mode .timer {
+        font-size: 180px; /* slightly reduced for better fit */
+        margin-bottom: 40px;
+        animation: timerZoom 1.5s ease forwards;
+        }
+
+        @keyframes timerZoom {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .timer:hover {
+            opacity: 0.7;
+        }
+
+        .timer-edit {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: -40px;
+            margin-bottom: 40px;
+        }
+
+        /* Control Buttons */
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: white;
+            color: black;
+            border: none;
+            padding: 16px 40px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .control-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .control-btn.complete {
+            background: #00ff88;
+            color: black;
+        }
+
+        .control-btn.complete:hover {
+            background: #00dd77;
+        }
+
+        /* Zen Mode Toggle */
+        .zen-toggle {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.3s ease;
+            z-index: 100;
+            color: rgba(255, 255, 255, 0.05);
+        }
+
+        .zen-toggle:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Zen Message */
+        .zen-message {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 24px;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+            border-radius: 6px;
+        }
+
+        .zen-message.show {
+            opacity: 1;
+        }
+
+        /* Stats */
+        .session-stats {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            color: white;
+            font-weight: 300;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .completion {
+            display: none;
+            text-align: center;
+        }
+
+        .completion.show {
+            display: block;
+        }
+
+        .completion h2 {
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        .completion p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+
+<!-- The rest of your script and HTML stays identical from your previous version -->
+<body>
+    <nav id="nav">
+        <div class="logo">EXTERES</div>
+        <div class="nav-actions">
+            <button class="nav-btn" onclick="window.location.href='/dashboard'">Dashboard</button>
+            <button class="nav-btn" onclick="window.location.href='/dashboard'">Tasks</button>
+            <button class="nav-btn" onclick="window.location.href='/profile'">Profile</button>
+        </div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Today's Tasks</h3>
+            <button class="add-task-btn" onclick="openAddTaskModal()">+</button>
+        </div>
+        <ul class="task-list" id="taskList">
+            <li class="loading">Loading tasks...</li>
+        </ul>
+    </div>
+
+    <div class="modal" id="addTaskModal">
+        <div class="modal-content">
+            <h2>Add New Task</h2>
+            <div class="form-group">
+                <label>Task Title</label>
+                <input type="text" id="taskTitleInput" placeholder="Enter task title">
+            </div>
+            <div class="form-group">
+            <label>Priority</label>
+            <select id="taskPriorityInput" class="form-group input" style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; font-size: 14px;">
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Low">Low</option>
+            </select>
+        </div>
+            <div class="modal-actions">
+                <button class="control-btn secondary" onclick="closeAddTaskModal()">Cancel</button>
+                <button class="control-btn" onclick="addTask()">Add Task</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editTimerModal">
+        <div class="modal-content">
+            <h2>Set Focus Duration</h2>
+            <div class="form-group">
+                <label for="timerMinutesInput">Duration in Minutes</label>
+                <input type="number" id="timerMinutesInput" placeholder="25" min="1" class="form-group input" style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; font-size: 14px;">
+            </div>
+            <div class="modal-actions">
+                <button class="control-btn secondary" onclick="closeEditTimerModal()">Cancel</button>
+                <button class="control-btn" onclick="setTimer()">Set Time</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmCompleteModal">
+        <div class="modal-content">
+            <h2>Complete Task?</h2>
+            <p class="modal-text">Are you sure you want to mark this task as complete now?</p>
+            <div class="modal-actions">
+                <button class="control-btn secondary" onclick="closeConfirmCompleteModal()">Cancel</button>
+                <button class="control-btn complete" onclick="confirmCompletion()">Yes, Complete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmCompleteSessionModal">
+      <div class="modal-content">
+        <h2>End Custom Session?</h2>
+        <p class="modal-text">Do you want to end this custom focus session early?</p>
+        <div class="modal-actions">
+          <button class="control-btn secondary" onclick="document.getElementById('confirmCompleteSessionModal').classList.remove('show')">Cancel</button>
+          <button class="control-btn complete" onclick="completeSession(true); document.getElementById('confirmCompleteSessionModal').classList.remove('show')">Yes, End Now</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="focus-container" id="focusContainer">
+        <div class="focus-content" id="focusContent">
+            <div class="current-task">Current Focus</div>
+            <h1 class="task-title" id="taskTitle">Select a task to begin</h1>
+            
+            <div class="timer" id="timer" onclick="editTimer()">20:00</div>
+            <div class="timer-edit" id="timer-edit">Click timer to edit</div>
+            
+            <div class="controls">
+                <button class="control-btn" id="startBtn" onclick="startSession()">Start Focus</button>
+                <button class="control-btn secondary" id="pauseBtn" onclick="pauseSession()" style="display: none;">Pause</button>
+                <button class="control-btn complete" id="completeBtn" onclick="completeTaskEarly()" style="display: none;">Complete Task</button>
+                <button class="control-btn complete" id="completeSessionBtn" onclick="document.getElementById('confirmCompleteSessionModal').classList.add('show')" style="display: none;">Complete Session</button>
+                <button class="control-btn secondary" onclick="resetSession()">Reset</button>
+            </div>
+
+            <div class="session-stats">
+                <div class="stat">
+                    <span class="stat-value" id="sessionsCompleted">0</span>
+                    <span class="stat-label">Sessions Today</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="totalMinutes">0</span>
+                    <span class="stat-label">Minutes Focused</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="tasksCompleted">0</span>
+                    <span class="stat-label">Tasks Done</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="completion" id="completion">
+            <h2>🎉 Session Complete!</h2>
+            <p>Great work! You've completed another focus session.</p>
+            <button class="control-btn" onclick="nextTask()">Next Task</button>
+        </div>
+    </div>
+
+    <div class="zen-message" id="zenMessage">
+        Press <kbd>Esc</kbd> or move to the bottom-right to exit Zen Mode.
+    </div>
+
+    <div class="zen-message" id="flashMessage"></div>
+
+    <button class="zen-toggle" id="zenToggle" onclick="toggleZenMode()">
+        Enter Zen Mode
+    </button>
+
+    <script>
+        // --- Global Variables ---
+        let timerInterval;
+        let timeRemaining = 25 * 60;
+        let initialTime = 25 * 60;
+        let isRunning = false;
+        let zenMode = false;
+        let currentTaskId = null;
+        let currentTaskTitle = "Select a task to begin";
+        let sessionStartTime = null;
+        let allTasks = [];
+        let flashTimeout; // *** ADDED: To manage the flash message
+        
+        // --- 1. Get Initial Data from Flask/Jinja ---
+        const initialTaskId = "{{ task_id or 'null' }}";
+        const initialTaskTitle = "{{ task_title or 'Select a task to begin' }}";
+        const initialDuration = {{ duration_min or 25 }};
+
+        // --- 2. Load Real Stats from Flask/Jinja ---
+        let stats = {
+            sessionsCompleted: {{ sessions_completed_count or 0 }},
+            totalMinutes: {{ total_focus_minutes or 0 }},
+            tasksCompleted: {{ tasks_completed_count or 0 }}
+        };
+
+        // --- 3. Page Initialization (Runs on Load) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (initialTaskId !== 'null') {
+                selectTask(parseInt(initialTaskId), initialTaskTitle, initialDuration);
+            } else {
+                document.getElementById('taskTitle').textContent = "Select a task to begin";
+                document.getElementById('timer-edit').style.display = 'block';
+            }
+            
+            loadTasks();
+            updateTimer();
+            updateStats();
+        });
+
+        // --- *** NEW HELPER: Flash Message *** ---
+        function showFlashMessage(message, duration = 3000) {
+            const flashEl = document.getElementById('flashMessage');
+            
+            if (flashTimeout) {
+                clearTimeout(flashTimeout);
+            }
+
+            flashEl.innerHTML = message;
+            flashEl.classList.add('show');
+
+            flashTimeout = setTimeout(() => {
+                flashEl.classList.remove('show');
+            }, duration);
+        }
+        
+        // --- Task Loading and Selection ---
+        async function loadTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                const tasks = await response.json();
+                allTasks = tasks;
+                renderTasks(tasks);
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                document.getElementById('taskList').innerHTML = '<li class="loading">Error loading tasks</li>';
+            }
+        }
+
+        function renderTasks(tasks) {
+            const taskList = document.getElementById('taskList');
+            const incompleteTasks = tasks.filter(t => !t.is_complete);
+            
+            if (incompleteTasks.length === 0) {
+                taskList.innerHTML = '<li class="loading">All tasks completed! 🎉</li>';
+                return;
+            }
+
+            taskList.innerHTML = incompleteTasks.map(task => `
+                <li class="task-item" 
+                    data-id="${task.id}" 
+                    data-title="${task.title}"
+                    onclick="selectTask(${task.id}, '${task.title.replace(/'/g, "\\'")}', 25)">
+                    ${task.title}
+                </li>
+            `).join('');
+
+            if (currentTaskId) {
+                 document.querySelector(`[data-id="${currentTaskId}"]`)?.classList.add('active');
+            }
+        }
+
+        function selectTask(taskId, title, duration = 25) {
+            currentTaskId = taskId;
+            currentTaskTitle = title;
+            document.getElementById('taskTitle').textContent = title;
+            document.getElementById('timer-edit').style.display = 'none';
+            
+            document.querySelectorAll('.task-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-id="${taskId}"]`)?.classList.add('active');
+            
+            timeRemaining = duration * 60;
+            initialTime = duration * 60;
+            
+            resetSession();
+            updateTimer();
+        }
+
+        // --- Add Task Modal ---
+        function openAddTaskModal() {
+            document.getElementById('addTaskModal').classList.add('show');
+            document.getElementById('taskTitleInput').value = '';
+            document.getElementById('taskPriorityInput').value = 'Medium';
+        }
+
+        function closeAddTaskModal() {
+            document.getElementById('addTaskModal').classList.remove('show');
+        }
+
+        async function addTask() {
+            const title = document.getElementById('taskTitleInput').value.trim();
+            const priority = document.getElementById('taskPriorityInput').value;
+
+            if (!title) {
+                // *** MODIFIED: Replaced alert() ***
+                showFlashMessage('Please enter a task title');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: title, priority: priority })
+                });
+
+                if (response.ok) {
+                    closeAddTaskModal();
+                    await loadTasks();
+                } else {
+                    // *** MODIFIED: Replaced alert() ***
+                    showFlashMessage('Error adding task');
+                }
+            } catch (error) {
+                console.error('Error adding task:', error);
+                // *** MODIFIED: Replaced alert() ***
+                showFlashMessage('Error adding task');
+            }
+        }
+
+        // --- New Modal Functions (ADDED) ---
+        function closeEditTimerModal() {
+            document.getElementById('editTimerModal').classList.remove('show');
+        }
+
+        function setTimer() {
+            const minutesInput = document.getElementById('timerMinutesInput');
+            const minutes = parseInt(minutesInput.value);
+
+            if (minutes && !isNaN(minutes) && minutes > 0) {
+                timeRemaining = minutes * 60;
+                initialTime = timeRemaining;
+                
+                if (!currentTaskId) {
+                    currentTaskId = "custom";
+                    currentTaskTitle = "Custom Focus Session";
+                    document.getElementById('taskTitle').textContent = currentTaskTitle;
+                    document.getElementById('timer-edit').style.display = 'none';
+                }
+                updateTimer();
+                closeEditTimerModal();
+            } else {
+                // *** MODIFIED: Replaced alert() ***
+                showFlashMessage('Please enter a valid number of minutes.');
+            }
+        }
+
+        function closeConfirmCompleteModal() {
+            document.getElementById('confirmCompleteModal').classList.remove('show');
+        }
+
+        async function confirmCompletion() {
+            await completeSession(true); // Call the original complete logic
+            closeConfirmCompleteModal();
+        }
+        
+        // --- Timer Controls ---
+        function editTimer() {
+            // MODIFIED: Replaced prompt() with modal
+            if (isRunning) return;
+            
+            const defaultMinutes = currentTaskId ? Math.ceil(timeRemaining / 60) : 25;
+            document.getElementById('timerMinutesInput').value = defaultMinutes;
+            document.getElementById('editTimerModal').classList.add('show');
+        }
+
+        function updateTimer() {
+            if (!currentTaskId) {
+                document.getElementById('timer').textContent = "--:--";
+                return;
+            }
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startSession() {
+            if (!currentTaskId) {
+                // *** MODIFIED: Replaced alert() ***
+                showFlashMessage('Please select a task first or set a custom time.');
+                return;
+            }
+
+            if (!isRunning) {
+                isRunning = true;
+                sessionStartTime = new Date();
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('pauseBtn').style.display = 'inline-block';
+                if (currentTaskId !== "custom") {
+                    document.getElementById('completeBtn').style.display = 'inline-block';
+                }
+                if (currentTaskId === "custom") {
+                document.getElementById('completeSessionBtn').style.display = 'inline-block';
+                } else {
+                document.getElementById('completeBtn').style.display = 'inline-block';
+                }              
+                
+                timerInterval = setInterval(() => {
+                    if (timeRemaining > 0) {
+                        timeRemaining--;
+                        updateTimer();
+                    } else {
+                        completeSession();
+                    }
+                }, 1000);
+
+                if (!zenMode) {
+                    toggleZenMode();
+                }
+            }
+        }
+
+        function pauseSession() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').style.display = 'inline-block';
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('pauseBtn').style.display = 'none';
+            }
+        }
+
+        function resetSession() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timeRemaining = initialTime;
+            updateTimer();
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('startBtn').textContent = 'Start Focus';
+            document.getElementById('pauseBtn').style.display = 'none';
+            document.getElementById('completeBtn').style.display = 'none';
+            document.getElementById('completeSessionBtn').style.display = 'none';
+            document.getElementById('completion').classList.remove('show');
+            document.getElementById('focusContent').style.display = 'block';
+        }
+
+        async function completeTaskEarly() {
+            // MODIFIED: Replaced confirm() with modal
+            document.getElementById('confirmCompleteModal').classList.add('show');
+        }
+
+        async function completeSession(early = false) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            
+            const actualMinutes = sessionStartTime 
+                ? Math.ceil((new Date() - sessionStartTime) / 60000)
+                : Math.ceil((initialTime - timeRemaining) / 60);
+            
+            if (actualMinutes > 0) {
+                stats.sessionsCompleted++;
+                stats.totalMinutes += actualMinutes;
+                
+                try {
+                    await fetch('/api/focus', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            duration_minutes: actualMinutes,
+                            task_id: currentTaskId !== "custom" ? currentTaskId : null
+                        })
+                    });
+                } catch (error) {
+                     console.error('Error saving focus session:', error);
+                }
+            }
+
+            if (currentTaskId !== "custom") {
+                stats.tasksCompleted++;
+                try {
+                    await fetch(`/api/tasks/${currentTaskId}/complete`, {
+                        method: 'PUT'
+                    });
+                    await loadTasks();
+                } catch (error) {
+                    console.error('Error completing task:', error);
+                }
+            }
+            
+            updateStats();
+
+            document.getElementById('focusContent').style.display = 'none';
+            document.getElementById('completion').classList.add('show');
+            
+            if (zenMode) {
+                toggleZenMode();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('sessionsCompleted').textContent = stats.sessionsCompleted;
+            document.getElementById('totalMinutes').textContent = stats.totalMinutes;
+            document.getElementById('tasksCompleted').textContent = stats.tasksCompleted;
+        }
+
+        function nextTask() {
+            const incompleteTasks = allTasks.filter(t => !t.is_complete && t.id !== currentTaskId);
+            
+            if (incompleteTasks.length > 0) {
+                const nextTask = incompleteTasks[0];
+                selectTask(nextTask.id, nextTask.title, 25); 
+            } else {
+                document.getElementById('taskTitle').textContent = 'All tasks completed! 🎉';
+                currentTaskId = null;
+                updateTimer();
+                resetSession(); 
+            }
+        }
+
+        // --- Zen Mode & Hotkeys ---
+        function toggleZenMode() {
+            zenMode = !zenMode;
+            const nav = document.getElementById('nav');
+            const sidebar = document.getElementById('sidebar');
+            const container = document.getElementById('focusContainer');
+            const toggle = document.getElementById('zenToggle');
+            const zenMessage = document.getElementById('zenMessage'); // MODIFIED: Get message
+            
+            if (zenMode) {
+                nav.classList.add('hidden');
+                sidebar.classList.add('hidden');
+                container.classList.add('zen-mode');
+                toggle.textContent = 'Exit Zen Mode';
+                document.body.style.cursor = 'none';
+
+                // MODIFIED: Show zen message
+                zenMessage.classList.add('show');
+                setTimeout(() => {
+                    zenMessage.classList.remove('show');
+                }, 4000); // Hide after 4 seconds
+                
+                setTimeout(() => {
+                    toggle.style.opacity = '0';
+                }, 3000);
+            } else {
+                nav.classList.remove('hidden');
+                sidebar.classList.remove('hidden');
+                container.classList.remove('zen-mode');
+                toggle.textContent = 'Enter Zen Mode';
+                document.body.style.cursor = 'default';
+                toggle.style.opacity = '1';
+                zenMessage.classList.remove('show'); // MODIFIED: Hide immediately
+            }
+        }
+
+        document.addEventListener('mousemove', () => {
+            if (zenMode) {
+                const toggle = document.getElementById('zenToggle');
+                toggle.style.opacity = '1';
+                document.body.style.cursor = 'default';
+                
+                setTimeout(() => {
+                    if (zenMode) {
+                        toggle.style.opacity = '0';
+                        document.body.style.cursor = 'none';
+                    }
+                }, 3000);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return; 
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (isRunning) {
+                    pauseSession();
+                } else {
+                    startSession();
+                }
+            } else if (e.code === 'Escape' && zenMode) {
+                toggleZenMode();
+            } else if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                toggleZenMode();
+            }
+        });
+    </script>
+</body>
+</html>

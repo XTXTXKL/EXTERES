@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXTERES - Pricing Plans</title>
+    <link href="https://fonts.cdnfonts.com/css/fk-grotesk" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/neutraface" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FK Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 60px;
+            background: rgba(0, 0, 0, 0.95);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 100;
+            color: white;
+            letter-spacing: 3px;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 50px;
+            list-style: none;
+        }
+
+        .nav-center a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-center a:hover {
+            color: white;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-icon {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px 10px;
+        }
+
+        /* Mobile Menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            z-index: 998;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 400px;
+            max-width: 90vw;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.1);
+            backdrop-filter: blur(40px);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            transition: right 0.4s ease;
+            z-index: 999;
+            padding: 100px 40px 40px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+        }
+
+        .mobile-menu ul li {
+            margin-bottom: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px 0;
+        }
+
+        .mobile-menu ul li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .mobile-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 400;
+            transition: opacity 0.3s ease;
+            display: block;
+        }
+        
+        /* Hero Section - Pricing Header */
+        .hero {
+            padding: 140px 60px 60px;
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            font-weight: 100;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            letter-spacing: -2px;
+            max-width: 900px;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+        
+        /* Pricing Cards Section */
+        .pricing-section {
+            padding: 80px 60px;
+            background: #000000;
+            text-align: center;
+        }
+        
+        .pricing-grid {
+            max-width: 1200px;
+            margin: 60px auto 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        
+        .pricing-card {
+            background: #0a0a0a;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card.highlight {
+            border-color: #ffffff;
+            background: #111111;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .pricing-card h3 {
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .pricing-card .price {
+            font-size: 60px;
+            font-weight: 100;
+            margin: 20px 0;
+            font-family: 'Neutraface Display Thin', 'FK Grotesk', sans-serif;
+            line-height: 1;
+        }
+        
+        .pricing-card .price small {
+            font-size: 18px;
+            opacity: 0.6;
+            margin-left: 5px;
+        }
+        
+        .pricing-card p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            min-height: 48px; /* Ensure consistent card height */
+        }
+        
+        .pricing-card ul {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 250px;
+        }
+        
+        .pricing-card ul li {
+            padding: 10px 0;
+            font-size: 14px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .pricing-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            color: #ffffff; /* Use white color for checkmark */
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .cta-button {
+            background: white;
+            color: #000000;
+            padding: 14px 30px;
+            border-radius: 0;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            width: 100%;
+            max-width: 250px;
+            text-align: center;
+        }
+
+        .cta-button:hover {
+            background: #cccccc;
+        }
+        
+        /* Footer - Copied from previous files */
+        footer {
+            background: #000000;
+            padding: 80px 60px 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 60px;
+            max-width: 1400px;
+            margin: 0 auto 60px;
+        }
+
+        .footer-section h4 {
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-section ul li a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            font-weight: 300;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-weight: 300;
+        }
+
+
+        @media (max-width: 1024px) {
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav, footer, .pricing-section {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+            .nav-center {
+                display: none;
+            }
+            .hero h1 {
+                font-size: 40px;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <nav>
+        <a href="{{ url_for('home') }}" class="logo">EXTERES</a>
+        <ul class="nav-center">
+            <li><a href="{{ url_for('features') }}">Features</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            <li style="color: white;"><a href="{{ url_for('pricing') }}" style="color: white;">Pricing</a></li>
+        </ul>
+        <div class="nav-right">
+            <button class="nav-icon" id="menuToggle">☰</button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="{{ url_for('features') }}">Features</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            <li><a href="{{ url_for('pricing') }}">Pricing</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="{{ url_for('auth') }}">Get Started</a></li>
+        </ul>
+    </div>
+
+    <section class="hero">
+        <h1>Transparent Pricing. Powerful Results.</h1>
+        <p>Choose a plan that fits your focus needs, whether you're an individual master or a coordinated team.</p>
+    </section>
+
+    <section class="pricing-section">
+        <div class="pricing-grid">
+            
+            <!-- Plan 1: Free Tier -->
+            <div class="pricing-card">
+                <h3>Starter</h3>
+                <p>The perfect entry point to test the power of EXTERES.</p>
+                <div class="price">$0<small>/mo</small></div>
+                
+                <ul>
+                    <li><span class="check-icon">✓</span> 5 Active Tasks</li>
+                    <li><span class="check-icon">✓</span> Basic Focus Timer</li>
+                    <li><span class="check-icon">✓</span> Email Support</li>
+                    <li><span class="check-icon">✓</span> Limited Analytics</li>
+                </ul>
+                <a href="{{ url_for('auth') }}" class="cta-button">Start Free</a>
+            </div>
+
+            <!-- Plan 2: Pro Tier (Highlighted) -->
+            <div class="pricing-card highlight">
+                <h3>Pro Focus</h3>
+                <p>Unlock deep concentration and comprehensive task management.</p>
+                <div class="price">$12<small>/mo</small></div>
+                
+                <ul>
+                    <li><span class="check-icon">✓</span> Unlimited Tasks & Projects</li>
+                    <li><span class="check-icon">✓</span> Deep Focus Sessions (AI Mode)</li>
+                    <li><span class="check-icon">✓</span> Advanced Analytics Dashboard</li>
+                    <li><span class="check-icon">✓</span> Seamless Integrations</li>
+                    <li><span class="check-icon">✓</span> Priority Chat Support</li>
+                </ul>
+                <a href="{{ url_for('auth') }}" class="cta-button" style="background: #ffffff; color: #000000;">Choose Pro</a>
+            </div>
+            
+            <!-- Plan 3: Team Tier -->
+            <div class="pricing-card">
+                <h3>Team Elite</h3>
+                <p>Engineered for high-performing teams that require coordination.</p>
+                <div class="price">$25<small>/user/mo</small></div>
+                
+                <ul>
+                    <li><span class="check-icon">✓</span> Everything in Pro Focus</li>
+                    <li><span class="check-icon">✓</span> Team Task Delegation</li>
+                    <li><span class="check-icon">✓</span> Shared Project Workspaces</li>
+                    <li><span class="check-icon">✓</span> Team Productivity Reporting</li>
+                    <li><span class="check-icon">✓</span> Dedicated Account Manager</li>
+                </ul>
+                <a href="{{ url_for('auth') }}" class="cta-button">Request Demo</a>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="{{ url_for('features') }}">Features</a></li>
+                    <li><a href="{{ url_for('pricing') }}">Pricing</a></li>
+                    <li><a href="#integrations">Integrations</a></li>
+                    <li><a href="#updates">Updates</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="{{ url_for('about') }}">About Us</a></li>
+                    <li><a href="#careers">Careers</a></li>
+                    <li><a href="#press">Press</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#guides">Guides</a></li>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#community">Community</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms of Service</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#cookies">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 EXTERES. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Menu toggle functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+        });
+
+        menuOverlay.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        });
+
+        // Close menu when clicking on a link
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                // Since this page uses explicit routes and fragment IDs are minimal, we keep the simple closing logic
+                mobileMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
